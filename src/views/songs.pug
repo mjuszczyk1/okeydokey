@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    .row
+        .col-xs-12
+            h1 Songs
+            form(method='POST' action='/songs')
+                //- The action here might change.
+                input#songSearch(type='text', placeholder='God Gave Rock n Roll to You, Pt II', name="songSearch" style="width: 100%;")
+    .row
+        .col-xs-12
+            ul
+                li
+                    a(href="#") God Gave Rock n Roll to You, Pt II

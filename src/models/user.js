@@ -17,7 +17,6 @@
 // Schema for User entry in DB:
 const mongoose = require('mongoose'),
       bcrypt   = require('bcrypt'),
-
       SALT_APPLY_AMMOUNT = 10;
 
 // Create schema
@@ -32,6 +31,27 @@ var UserSchema = new mongoose.Schema({
     favoriteGenre: {type: String, required: true, trim: true},
     password: {type: String, required: true}
 });
+
+// authenticate input
+UserSchema.statics.authenticate = (email, password, cb) => {
+    User.findOne({email: email})
+        .exec((error, user) => {
+            if (error){
+                return cb(error);
+            } else if (!user) {
+                const err = new Error('User not found.');
+                err.status = 401;
+                return cb(err);
+            }
+            bcrypt.compare(password, user.password, (error, result) => {
+                if (result) {
+                    return cb(null, user);
+                } else {
+                    return cb();
+                }
+            });
+        });
+}
 
 // hash pass before saving
 UserSchema.pre('save', function(next) {

@@ -26,6 +26,7 @@
 
 const express = require('express'),
       User    = require('../models/user'),
+      mid     = require('../middleware'),
       router  = express.Router();
 
 
@@ -35,7 +36,7 @@ router.get('/', (req,res,next) => {
 });
 
 // GET /register
-router.get('/register', (req,res,next) => {
+router.get('/register', mid.loggedOut, (req,res,next) => {
     return res.render('register', {title: 'Register'});
 });
 
@@ -67,6 +68,7 @@ router.post('/register', (req,res,next) => {
             if (error){
                 return next(error);
             } else {
+                req.session.userId = user._id;
                 return res.redirect('/profile');
             }
         });
@@ -79,8 +81,59 @@ router.post('/register', (req,res,next) => {
 });
 
 // GET /profile
-router.get('/profile', (req,res,next) => {
-    return res.render('profile', {title: 'Account'})
+router.get('/profile', mid.requiresLogin, (req,res,next) => {
+    // if (!req.session.userId){
+    //     const err = new Error("You are not authorized to view this page.");
+    //     err.status = 403;
+    //     return next(err);
+    // }
+    // Taken care of in middleware
+    User.findById(req.session.userId)
+        .exec((error, user) => {
+            if (error) {
+                return next(error);
+            } else {
+                return res.render('profile', {title: 'Account', name: user.name, favorite: user.favoriteGenre})            
+            }
+        });  
+});
+
+// GET /login
+router.get('/login', mid.loggedOut, (req,res,next) => {
+    return res.render('login', {title: 'Log In'});
+});
+
+// POST /login
+router.post('/login', (req,res,next) => {
+    if (!(req.body.email && req.body.password)) {
+        const err = new Error('Email and password are required');
+        err.status = 401;
+        return next(err);
+    }
+
+    User.authenticate(req.body.email, req.body.password, (error, user) => {
+        if (error || !user){
+            const err = new Error('Wrong email or password');
+            err.status = 401;
+            return next(err);
+        } else {
+            req.session.userId = user._id;
+            return res.redirect('/profile');
+        }
+    });    
+});
+
+// GET /logout
+router.get('/logout', (req,res,next) => {
+    if (req.session) {
+        //delete session
+        req.session.destroy((error) => {
+            if (error) {
+                return next(err);
+            }
+            return res.redirect('/');
+        });
+    }
 });
 
 // GET /songs

@@ -10,8 +10,12 @@ nav.navbar.navbar-inverse
         div.collapse.navbar-collapse(id="navbar")
             ul.nav.navbar-nav.navbar-right
                 li
-                    a(href="/login") Login
-                li
-                    a(href="/register") Register
-                li
                     a(href="/songs") Songs
+                if currentUser
+                    li
+                        a(href="/logout") Logout
+                else
+                    li
+                        a(href="/login") Login
+                    li
+                        a(href="/register") Register

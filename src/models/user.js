@@ -34,15 +34,16 @@ var UserSchema = new mongoose.Schema({
 
 // authenticate input
 UserSchema.statics.authenticate = (email, password, cb) => {
-    User.findOne({email: email})
-        .exec((error, user) => {
+    User.findOne({email: email})// Queries DB, looking for a matching email address.
+        .exec((error, user) => {//going to be executing something on that user
             if (error){
-                return cb(error);
+                return cb(error);// Bad error
             } else if (!user) {
                 const err = new Error('User not found.');
                 err.status = 401;
-                return cb(err);
+                return cb(err);//Probably typed in wrong email.
             }
+            //Need to compare plain text password to Encrypted, so use the bcrypt compare method.
             bcrypt.compare(password, user.password, (error, result) => {
                 if (result) {
                     return cb(null, user);
@@ -74,5 +75,7 @@ UserSchema.pre('save', function(next) {
         });
     });
 });
+
 const User = mongoose.model('User', UserSchema);
+
 module.exports = User;

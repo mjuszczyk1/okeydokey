@@ -68,7 +68,7 @@ router.post('/register', (req,res,next) => {
             if (error){
                 return next(error);
             } else {
-                req.session.userId = user._id;
+                req.session.userId = user._id;// This will make it so user is automatically logged in after register.
                 return res.redirect('/profile');
             }
         });
@@ -87,7 +87,7 @@ router.get('/profile', mid.requiresLogin, (req,res,next) => {
     //     err.status = 403;
     //     return next(err);
     // }
-    // Taken care of in middleware
+    // Taken care of in middleware, mid.requiresLogin
     User.findById(req.session.userId)
         .exec((error, user) => {
             if (error) {
@@ -111,6 +111,7 @@ router.post('/login', (req,res,next) => {
         return next(err);
     }
 
+    // Now we need to use our authenticate method we created in user.js:
     User.authenticate(req.body.email, req.body.password, (error, user) => {
         if (error || !user){
             const err = new Error('Wrong email or password');
@@ -126,7 +127,8 @@ router.post('/login', (req,res,next) => {
 // GET /logout
 router.get('/logout', (req,res,next) => {
     if (req.session) {
-        //delete session
+        // delete session
+        // this also removes it from the sessions db in mongog
         req.session.destroy((error) => {
             if (error) {
                 return next(err);

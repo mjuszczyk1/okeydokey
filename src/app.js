@@ -8,8 +8,7 @@
  *  this file also sets up the app to use Pug as the view engine
  *  this file pulls in the routes for our app, and listens on the port.
  *  Go to routes/index.js for next flow notes
- * 
- * Need to learn sessions so I can actually stay logged in and whatnot afterwards
+ *  
  */
 
 
@@ -31,22 +30,27 @@ db.on('error', console.error.bind(console, 'connection error: '));
 
 // Once session is created, you can grab it from the req obj on routes.
 app.use(session({
-    secret: 'asldkfj owif237* (*&_837odjf/',
+    secret: 'asldkfj owif237* (*&_837odjf/',// This can be anything. Protects cookies n stuff.
     resave: true,
     saveUninitialized: false,
-    store: new MongoStore({
+    store: new MongoStore({// instead of storing sessions in RAM, this will store it in a new db, so we can have a lotta active users.
         mongooseConnection: db
     })
 }));
 
 // make user ID avaialbe in templates
 app.use((req,res,next) => {
+    // res.locals will make variables available in template files.
+    // It's simply accessed with something like...
+    //      if currentUser
+    // In this case of pug.
     res.locals.currentUser = req.session.userId;
     next();
 });
 
-app.use(bodyParser.json());
+app.use(bodyParser.json());// Parses info into JSON so we can use it in app.
 app.use(bodyParser.urlencoded({extended: false}));
+// ^^ Have to look up the urlencode method, but probably just makes sure there's no spaces or anything in the URL
 
 // Set view engine:
 app.set('view engine', 'pug');//basically sets the extension we will be using for view files
@@ -55,6 +59,9 @@ app.set('views', __dirname + '/views');//directory of view files
 app.use('/', routes);// add routes to app
 
 //Error handler
+// Express knows it's an error handler because of order/amount of arguments.
+// This, plus error.pug, will render error messages to the page, as opposed
+// to just showing a stacktrace.
 app.use((err,req,res,next) => {
     res.status(err.status || 500);
     res.render('error', {

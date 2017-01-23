@@ -15,7 +15,8 @@
 const express    = require('express'),
       mongoose   = require('mongoose'),
       bodyParser = require('body-parser'),
-      routes     = require('./routes/index.js'),
+      UserRoutes = require('./routes/user.js'),
+      SongRoutes = require('./routes/song.js'),
       session    = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       port       = 3000;
@@ -56,7 +57,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.set('view engine', 'pug');//basically sets the extension we will be using for view files
 app.set('views', __dirname + '/views');//directory of view files
 
-app.use('/', routes);// add routes to app
+app.use('/', UserRoutes);// add routes to app
+app.use('/songs', SongRoutes);
 
 //Error handler
 // Express knows it's an error handler because of order/amount of arguments.

@@ -10,5 +10,21 @@ block content
     .row
         .col-xs-12
             ul
-                li
-                    a(href="#") God Gave Rock n Roll to You, Pt II
+                each song in songs
+                    li
+                        a(href="#") #{song.title}
+                        if song.album || song.artist || song.year || song.bpm
+                        ul
+                            if song.album
+                                li Album: #{song.album}
+                            if song.artist
+                                li Artist: #{song.artist}
+                            if song.year
+                                li Year: #{song.year}
+                            if song.bpm
+                                li BPM: #{song.bpm}
+    if currentUser
+        .row
+            .col-sm-8.col-sm-offset-2
+                button.btn(style="width: 100%;")
+                    a(href="/songs/add" style="display: block;") Add Song

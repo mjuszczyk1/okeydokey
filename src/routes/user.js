@@ -138,10 +138,7 @@ router.get('/logout', (req,res,next) => {
     }
 });
 
-// GET /songs
-router.get('/songs', (req,res,next) => {
-    return res.render('songs', {title: 'Songs'});
-});
+
 
 // export it so we can use it in app.js
 module.exports = router;

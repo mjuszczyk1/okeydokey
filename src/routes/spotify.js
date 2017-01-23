@@ -97,10 +97,8 @@ router.get('/test/getRelatedAlbums', (req,res,next) => {
                             // Now to find the albums:
                             spotifyApi.getArtistAlbums(data.body.artists[0].id)
                                 .then((data) => {
-                                    // If we're here, we have albums. I want to remove all albums
-                                    // that end in "Single" cause we really only want to show 
-                                    // LPs. There might be a way to do this based on the Response,
-                                    // but for now, this is a quick and dirty solution.
+                                    // If we're here, we have albums. I want to remove all singles
+                                    // so lets use the 'album_type' property
                                     console.log(data.body.items);
                                     for (let i = 0; i < data.body.items.length; i++) {
                                         if (data.body.items[i].album_type === "album") { 

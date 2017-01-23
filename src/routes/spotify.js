@@ -19,7 +19,7 @@ const spotifyApi = new spotifyWebApi({
 });
 
 // GET /songs/test
-router.get('/test', (req,res,next) => {
+router.get('/out', (req,res,next) => {
     /**
      * So I don't go through the headache again...
      * If the artist string ain't nothing (lets say "woeifj2839uf8v9j"),
@@ -29,7 +29,7 @@ router.get('/test', (req,res,next) => {
      * If it's not, we'll need a way to flash a message that says 
      * Artist not found, er something like that.
      */
-    return res.render('spotify', {title: "Spotify API"});
+    return res.render('spotify-out', {title: "Spotify API"});
 });
 
 // Get artist ID
@@ -39,7 +39,7 @@ router.get('/test', (req,res,next) => {
  * in other things, but for the most part, this is super
  * simple, meant to just demonstrate some functionality.
  */
-router.get('/test/getArtistId', (req,res,next) => {
+router.get('/out/getArtistId', (req,res,next) => {
     // Set up variable for user's entered artist:
     const artist = req.query.artist;
     // Now time to query API:
@@ -72,7 +72,7 @@ router.get('/test/getArtistId', (req,res,next) => {
  * related artist, then we return all of that artists albums 
  * (as long as they don't end in "Single").
  */
-router.get('/test/getRelatedAlbums', (req,res,next) => {
+router.get('/out/getRelatedAlbums', (req,res,next) => {
     const artist = req.query.artist;
     spotifyApi.searchArtists(artist)// This is the original artist the user enters.
         .then((data) => {
@@ -126,6 +126,66 @@ router.get('/test/getRelatedAlbums', (req,res,next) => {
             // If there's an error with the API, it goes here.
             return next(err);
     });
+});
+
+// Let's generate some music previews.
+/**
+ * This one is going to be difficult.
+ * Not because of API stuff, but because of doing the previews in line.
+ * I was following http://jsfiddle.net/JMPerez/0u0v7e1b/
+ * Which is from the guys that made the Spotify Web API Node wrapper.
+ * In the template, right now, it just puts the songs in a list. I think I'm
+ * really close, I just need to figure out how to attach the click listener to
+ * the code generated in the <script> tag. All I could get it to return
+ * when targeting the song links was window. That jsfiddle uses what looks like
+ * results.addEventListener
+ * But I don't know where 'results' comes from
+ */
+router.get('/out/playPreviews', (req,res,next) => {
+    // For now, I'm just gonna copy some stuff from the
+    // /out/getRelatedAlbums route like to get artist ID
+    // but Later on, these should be pulled out into
+    // Their own file so I can reuse them without having to repeat.
+    const artist = req.query.artist;
+    spotifyApi.searchArtists(artist)
+        .then((data) => {
+            if (data.body.artists.total > 0) {
+                spotifyApi.getArtistAlbums(data.body.artists.items[0].id)
+                    .then((data) => {
+                        if (data.body.items.length) {
+                            spotifyApi.getAlbumTracks(data.body.items[0].id)
+                                .then((data) => {
+                                    // At this point, in data.body, we have the list of songs
+                                    // from the artist's most recent album.
+                                    // I believe that means we're done here - we just need
+                                    // to find a way to play the previews in line. There
+                                    // was definitely an example of this I saw somewhere...
+                                    res.send(data.body);
+                                }, (err) => {
+                                    return next(err);
+                                });
+                        } else {
+                            res.send('Albums not found');
+                        }
+                    }, (err) => {
+                        // If something goes wrong with the API call:            
+                        return next(err);
+                    });
+            } else {
+                res.send('Artist Not Found');
+            }
+        }, (err) => {
+            // If something goes wrong with the API call:
+            return next(err);
+        });
+});
+
+//===========================================================
+// Now we'll do some stuff for Logged in users.
+//===========================================================
+
+router.get('/in', (req,res,next) => {
+    return res.render('spotify-in', {title: "Logged in stuff"});
 });
 
 module.exports = router;

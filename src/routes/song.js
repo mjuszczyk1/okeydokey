@@ -1,10 +1,10 @@
-const express = require('express'),
-      User    = require('../models/user'),
-      Song    = require('../models/song'),
-      mid     = require('../middleware'),
-      router  = express.Router();
+'use strict';
 
-
+const express       = require('express'),
+      User          = require('../models/user'),
+      Song          = require('../models/song'),
+      mid           = require('../middleware'),
+      router        = express.Router();
 
 // GET /songs
 router.get('/', (req,res,next) => {
@@ -46,18 +46,6 @@ router.post('/add', mid.requiresLogin, (req,res,next) => {
         err.status = 400;
         return next(err);
     }
-});
-
-// GET /songs/test
-router.get('/test', (req,res,next) => {
-    const CLIENT_ID = '17d81671aacf46519078e7629844450d',
-          CLIENT_SECRET = '5be1b9a0a8674ce88a165b08ca993f1e',
-          REDIRECT_URI = 'http://localhost:3000/test/',
-          API_BASE_URL = 'https://api.spotify.com/',
-          API_VERSION = 'v1', // Added trailing slashes so don't have to do any extra concats.
-          API_URL = API_BASE_URL + API_VERSION;
-    return res.render('spotify', {title: "Spotify API"});
-
 });
 
 module.exports = router;

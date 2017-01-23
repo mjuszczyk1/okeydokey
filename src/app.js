@@ -17,6 +17,7 @@ const express    = require('express'),
       bodyParser = require('body-parser'),
       UserRoutes = require('./routes/user.js'),
       SongRoutes = require('./routes/song.js'),
+      SpotifyRoutes = require('./routes/spotify.js'),
       session    = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       port       = 3000;
@@ -59,6 +60,7 @@ app.set('views', __dirname + '/views');//directory of view files
 
 app.use('/', UserRoutes);// add routes to app
 app.use('/songs', SongRoutes);
+app.use('/spotify', SpotifyRoutes);
 
 //Error handler
 // Express knows it's an error handler because of order/amount of arguments.

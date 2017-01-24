@@ -42,6 +42,25 @@ block content
             h1#songPreviewsAlbumTitle
             ul#songPreviews
 
+    .row
+        .col-md-6.col-md-offset-3
+            div.well
+                p I want to return every artist with "Yung" in their name.
+                p And actually, since we don't need any user input, we'll just supply the template with that info.
+            h1 Yung artists
+            each yungin in yungArtists
+                if yungin.images.length
+                    div.row.yungin-row
+                        div.col-md-6.img-col
+                            a(href=`${yungin.external_urls.spotify}` target="blank")
+                                img(src=`${yungin.images[0].url}`)
+                        div.col-md-6.name-col
+                            h1.no-top-marg: a(href=`${yungin.external_urls.spotify}` target="blank") #{yungin.name}
+                            if yungin.genres.length
+                                ul
+                                    each genre in yungin.genres
+                                        li #{genre}
+
 block scripts
     script.
         (($) => {

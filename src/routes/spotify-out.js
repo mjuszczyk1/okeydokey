@@ -25,7 +25,13 @@ router.get('/', (req,res,next) => {
      * If it's not, we'll need a way to flash a message that says 
      * Artist not found, er something like that.
      */
-    return res.render('spotify-out', {title: "Spotify API"});
+    spotifyApi.searchArtists('Yung')
+        .then((data) => {
+            console.log(data.body.artists.items);
+            return res.render('spotify-out', {title: "Spotify API", yungArtists: data.body.artists.items});
+        }, (err) => {
+            return next(err);
+    });
 });
 
 // Get artist ID
@@ -161,14 +167,14 @@ router.get('/playPreviews', (req,res,next) => {
                             // At this point, it would be a cool idea to add the album name
                             // to the response, so let's try it out:
                             // (Sending as map cause we have a lotta other stuff to send)
-                            let finalResposne = {albumTitle: data.body.items[0].name}
+                            let finalResponse = {albumTitle: data.body.items[0].name}
                             // Finally, find tracks:
                             spotifyApi.getAlbumTracks(data.body.items[0].id)
                                 .then((data) => {
                                     // At this point, in data.body, we have the list of songs
                                     // from the artist's most recent album.
-                                    finalResposne['spotifyResponse'] = data.body;
-                                    res.send(finalResposne);
+                                    finalResponse['spotifyResponse'] = data.body;
+                                    res.send(finalResponse);
                                 }, (err) => {
                                     return next(err);
                                 });

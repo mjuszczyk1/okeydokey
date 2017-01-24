@@ -1,10 +1,27 @@
 html {
     background: #222;
 }
-
+.no-top-marg {
+    margin-top: 0;
+}
 nav.navbar {
     border-radius: 0;
     border-top: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+.yungin-row {
+    margin-bottom: 15px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.yungin-row .img-col {
+    max-height: 263px;
+    overflow: hidden;
 }
 
 .song-clip-link:hover {

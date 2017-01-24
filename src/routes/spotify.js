@@ -134,12 +134,19 @@ router.get('/out/getRelatedAlbums', (req,res,next) => {
  * Not because of API stuff, but because of doing the previews in line.
  * I was following http://jsfiddle.net/JMPerez/0u0v7e1b/
  * Which is from the guys that made the Spotify Web API Node wrapper.
- * In the template, right now, it just puts the songs in a list. I think I'm
- * really close, I just need to figure out how to attach the click listener to
+ * I just need to figure out how to attach the click listener to
  * the code generated in the <script> tag. All I could get it to return
  * when targeting the song links was window. That jsfiddle uses what looks like
  * results.addEventListener
  * But I don't know where 'results' comes from
+ * --
+ * Still don't understand 'results', but I kind of had 2 problems in my template:
+ * First, and I'm not completely sure this was a problem, but it's good practice,
+ * I didn't have the ajax calls in a DOM ready block, cause I figured maybe
+ * someone would submit a request before page was finished loading.
+ * Second, it just seemed like my browser didn't want to deal with the new 
+ * arrow function syntax. After changing it to the old 'function (e) {}', 
+ * everything seems to be working just fine.
  */
 router.get('/out/playPreviews', (req,res,next) => {
     // For now, I'm just gonna copy some stuff from the
@@ -147,20 +154,25 @@ router.get('/out/playPreviews', (req,res,next) => {
     // but Later on, these should be pulled out into
     // Their own file so I can reuse them without having to repeat.
     const artist = req.query.artist;
+    // First need to find artist ID:
     spotifyApi.searchArtists(artist)
         .then((data) => {
             if (data.body.artists.total > 0) {
+                // Next we need to find artist albums:
                 spotifyApi.getArtistAlbums(data.body.artists.items[0].id)
                     .then((data) => {
                         if (data.body.items.length) {
+                            // At this point, it would be a cool idea to add the album name
+                            // to the response, so let's try it out:
+                            // (Sending as map cause we have a lotta other stuff to send)
+                            let finalResposne = {albumTitle: data.body.items[0].name}
+                            // Finally, find tracks:
                             spotifyApi.getAlbumTracks(data.body.items[0].id)
                                 .then((data) => {
                                     // At this point, in data.body, we have the list of songs
                                     // from the artist's most recent album.
-                                    // I believe that means we're done here - we just need
-                                    // to find a way to play the previews in line. There
-                                    // was definitely an example of this I saw somewhere...
-                                    res.send(data.body);
+                                    finalResposne['spotifyResponse'] = data.body;
+                                    res.send(finalResposne);
                                 }, (err) => {
                                     return next(err);
                                 });

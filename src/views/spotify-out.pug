@@ -34,11 +34,13 @@ block content
             div.well
                 p For this form, we'll take an artist name and return links to clips of songs from their most recent album.
                 p For example, Danny Brown will return previews for the Atrocity Album.
+                a.testing123(href="#") Testing123
             form#playPreviews
                 div.form-group
                     label(for='artistPreview') Artist:
                     input#artistPreview.form-control(type='text' placeholder='Danny Brown' name='artistPreview')
                 button.btn.btn-primary(type='submit') Submit
+            h1#songPreviewsAlbumTitle
             ul#songPreviews
 
 block scripts
@@ -47,44 +49,76 @@ block scripts
             //- Let's make a function to display song titles for the preview form:
             function buildSongPreview(albumObject) {
                 const ele = $('#songPreviews'),
-                      old = $('#songPreviews li');
-                let audioObject = null;
+                      old = $('#songPreviews li'),
+                      play = 'playing';
                 old.remove();
-                for (let i = 0; i < albumObject.total; i++) {
-                    console.log("ID: " + albumObject.items[i].id);
-                    ele.append("<li><a data-preview-url=\"" + albumObject.items[i].preview_url + "\" data-song-id=\"" + albumObject.items[i].id + "\" class='song-clip-link'>" + albumObject.items[i].name + "</a></li>");
+                for (let i = 0; i < albumObject.spotifyResponse.total; i++) {
+                    const preview_url = albumObject.spotifyResponse.items[i].preview_url,
+                          id          = albumObject.spotifyResponse.items[i].id,
+                          name        = albumObject.spotifyResponse.items[i].name;
+                    ele.append("<li><a data-preview-url=\"" + preview_url + "\" data-song-id=\"" + id + "\" class='song-clip-link'>" + name + "</a></li>");
                 }
-            }
 
-            //--------------- AJAX CALLS ----------------------//
-            $('#artistSearch').submit((e) => {
-                e.preventDefault();
-                const searchParams = {artist: $('#searchArtist').val()};
-                $.get('/spotify/out/getArtistId', searchParams, (data) => {
-                    $('#artistId').text(data)
+                let audioObject = null;
+                $('.song-clip-link').click(function(e) {
+                    const $this      = $(this),
+                          otherSongs = $('.song-clip-link');
+
+                    if ($this.hasClass(play)) {
+                        $this.removeClass(play);
+                        audioObject.pause()
+                    } else {
+                        // Remove .playing and pause any audio before starting new one.    
+                        otherSongs.filter(function(song){
+                            if (otherSongs[song].classList.contains(play)) {
+                                audioObject.pause();
+                                otherSongs[song].classList.remove(play);
+                            }
+                        });
+                        // Add class playing and start playing
+                        $this.addClass(play);
+                        audioObject = new Audio($this.attr('data-preview-url'));
+                        audioObject.play();
+                        audioObject.addEventListener('ended', function(e){
+                            $this.removeClass('playing');
+                        });
+                    }
                 });
-            });
-            $('#longerRequest').submit((e) => {
-                e.preventDefault();
-                const searchParams = {artist: $('#searchRelatedAlbums').val()};
-                $.get('/spotify/out/getRelatedAlbums', searchParams, (data) => {
-                    $('#mostRelatedArtist').text(data.shift());
-                    const albumList = $('#albumList'),
-                          oldAlbums = $('#albumList li');
-                    oldAlbums.remove();
-                    $.each(data, (i) => {
-                        albumList.append("<li>" + data[i] + "</li>");
+                
+            }
+            $(document).ready((e) => {
+                //--------------- AJAX CALLS ----------------------//
+                $('#artistSearch').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {artist: $('#searchArtist').val()};
+                    $.get('/spotify/out/getArtistId', searchParams, (data) => {
+                        $('#artistId').text(data)
+                    });
+                });
+                $('#longerRequest').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {artist: $('#searchRelatedAlbums').val()};
+                    $.get('/spotify/out/getRelatedAlbums', searchParams, (data) => {
+                        $('#mostRelatedArtist').text(data.shift());
+                        const albumList = $('#albumList'),
+                              oldAlbums = $('#albumList li');
+                        oldAlbums.remove();
+                        $.each(data, (i) => {
+                            albumList.append("<li>" + data[i] + "</li>");
+                        });
+                    });
+                });
+                $('#playPreviews').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {artist: $('#artistPreview').val()};
+                    $.get('/spotify/out/playPreviews', searchParams, (data) => {
+                        $('#songPreviewsAlbumTitle').text(data.albumTitle);
+                        buildSongPreview(data);
+                        
                     });
                 });
             });
-            $('#playPreviews').submit((e) => {
-                e.preventDefault();
-                const searchParams = {artist: $('#artistPreview').val()};
-                $.get('/spotify/out/playPreviews', searchParams, (data) => {
-                    buildSongPreview(data);
-                    
-                });
-            });
+            
             
             
         })(jQuery);

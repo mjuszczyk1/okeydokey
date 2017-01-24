@@ -15,9 +15,9 @@
 const express    = require('express'),
       mongoose   = require('mongoose'),
       bodyParser = require('body-parser'),
-      UserRoutes = require('./routes/user.js'),
-      SongRoutes = require('./routes/song.js'),
-      SpotifyRoutes = require('./routes/spotify.js'),
+      UserRoutes = require('./src/routes/user.js'),
+      SongRoutes = require('./src/routes/song.js'),
+      SpotifyRoutes = require('./src/routes/spotify.js'),
       session    = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       port       = 3000;
@@ -56,7 +56,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 // Set view engine:
 app.set('view engine', 'pug');//basically sets the extension we will be using for view files
-app.set('views', __dirname + '/views');//directory of view files
+app.set('views', __dirname + '/src/views');//directory of view files
+// Pretty print HTML, cause that's annoying.
+if (app.get('env') === 'development') {
+  app.locals.pretty = true;
+}
+
+// Serve our public files
+app.use(express.static(__dirname + '/public'));
 
 app.use('/', UserRoutes);// add routes to app
 app.use('/songs', SongRoutes);

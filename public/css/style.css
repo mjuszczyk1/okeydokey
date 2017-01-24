@@ -1,0 +1,9 @@
+.song-clip-link:hover {
+    cursor: pointer;
+}
+.song-clip-link.playing {
+    color: red;
+}
+.song-clip-link.playing::before {
+    content: '> ';
+}

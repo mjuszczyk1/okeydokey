@@ -12,11 +12,7 @@ const express       = require('express'),
       mid           = require('../middleware'),
       router        = express.Router();
 
-const spotifyApi = new spotifyWebApi({
-    clientId: '17d81671aacf46519078e7629844450d',
-    clientSecret: '5be1b9a0a8674ce88a165b08ca993f1e',
-    redirectUri: 'http://localhost:3000/songs/test/'
-});
+const spotifyApi = new spotifyWebApi();
 
 // GET /songs/test
 router.get('/', (req,res,next) => {

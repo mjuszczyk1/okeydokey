@@ -18,7 +18,7 @@ const express    = require('express'),
       UserRoutes = require('./src/routes/user.js'),
       SongRoutes = require('./src/routes/song.js'),
       SpotifyOut = require('./src/routes/spotify-out.js'),
-      SpotifyIn  = require('./src/routes/spotify-in.js'),
+      // SpotifyIn  = require('./src/routes/spotify-in.js'),
       session    = require('express-session'),
       MongoStore = require('connect-mongo')(session),
       port       = 3000;
@@ -69,7 +69,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/', UserRoutes);// add routes to app
 app.use('/songs', SongRoutes);
 app.use('/spotify/out', SpotifyOut);
-app.use('/spotify/in', SpotifyIn);
+// app.use('/spotify/in', SpotifyIn);
 
 //Error handler
 // Express knows it's an error handler because of order/amount of arguments.

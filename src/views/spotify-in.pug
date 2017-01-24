@@ -1,0 +1,31 @@
+extends layout
+
+block content
+    .row
+        .col-md-6.col-md-offset-3
+            div.well
+                p Woah, pretty cool that you can get the audio analysis stuff, like BPM and key and whatnot.
+                p Let's take in an album title, and return the BPMs and TIME SIGNATURE??
+                p ... I'll believe signature when I see it...
+            form#artistSearch
+                div.form-group
+                    label(for='searchArtist') Artist:
+                    input#searchArtist.form-control(type='text', placeholder='Danny Brown' name='searchArtist')
+                button.btn.btn-primary(type='submit') Submit
+            h1#artistId
+            hr/
+
+block scripts
+    script.
+        (($) => {
+            $(document).ready((e) => {
+                //--------------- AJAX CALLS ----------------------//
+                $('#artistSearch').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {artist: $('#searchArtist').val()};
+                    $.get('/spotify/in/getAlbumAnalysis', searchParams, (data) => {
+                        //- console.log(data);
+                    });
+                });
+            });
+        })(jQuery);

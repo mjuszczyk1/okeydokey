@@ -19,7 +19,7 @@ const spotifyApi = new spotifyWebApi({
 });
 
 // GET /songs/test
-router.get('/out', (req,res,next) => {
+router.get('/', (req,res,next) => {
     /**
      * So I don't go through the headache again...
      * If the artist string ain't nothing (lets say "woeifj2839uf8v9j"),
@@ -39,7 +39,7 @@ router.get('/out', (req,res,next) => {
  * in other things, but for the most part, this is super
  * simple, meant to just demonstrate some functionality.
  */
-router.get('/out/getArtistId', (req,res,next) => {
+router.get('/getArtistId', (req,res,next) => {
     // Set up variable for user's entered artist:
     const artist = req.query.artist;
     // Now time to query API:
@@ -72,7 +72,7 @@ router.get('/out/getArtistId', (req,res,next) => {
  * related artist, then we return all of that artists albums 
  * (as long as they don't end in "Single").
  */
-router.get('/out/getRelatedAlbums', (req,res,next) => {
+router.get('/getRelatedAlbums', (req,res,next) => {
     const artist = req.query.artist;
     spotifyApi.searchArtists(artist)// This is the original artist the user enters.
         .then((data) => {
@@ -148,7 +148,7 @@ router.get('/out/getRelatedAlbums', (req,res,next) => {
  * arrow function syntax. After changing it to the old 'function (e) {}', 
  * everything seems to be working just fine.
  */
-router.get('/out/playPreviews', (req,res,next) => {
+router.get('/playPreviews', (req,res,next) => {
     // For now, I'm just gonna copy some stuff from the
     // /out/getRelatedAlbums route like to get artist ID
     // but Later on, these should be pulled out into
@@ -192,12 +192,5 @@ router.get('/out/playPreviews', (req,res,next) => {
         });
 });
 
-//===========================================================
-// Now we'll do some stuff for Logged in users.
-//===========================================================
-
-router.get('/in', (req,res,next) => {
-    return res.render('spotify-in', {title: "Logged in stuff"});
-});
 
 module.exports = router;

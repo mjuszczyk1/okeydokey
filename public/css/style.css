@@ -1,3 +1,12 @@
+html {
+    background: #222;
+}
+
+nav.navbar {
+    border-radius: 0;
+    border-top: 0;
+}
+
 .song-clip-link:hover {
     cursor: pointer;
 }
@@ -6,4 +15,14 @@
 }
 .song-clip-link.playing::before {
     content: '> ';
+}
+
+footer {
+    background: #222;
+    color: white;
+    padding: 10px;
+    margin-top: 30px;
+}
+footer p {
+    margin: 0;
 }

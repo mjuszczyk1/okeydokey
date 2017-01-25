@@ -25,16 +25,10 @@ router.get('/', (req,res,next) => {
      * If it's not, we'll need a way to flash a message that says 
      * Artist not found, er something like that.
      */
-    spotifyApi.searchArtists('Yung')
-        .then((data) => {
-            console.log(data.body.artists.items);
-            return res.render(
-                'spotify-out', 
-                {title: "Spotify API", yungArtists: data.body.artists.items}
-            );
-        }, (err) => {
-            return next(err);
-    });
+    return res.render(
+        'spotify-out', 
+        {title: "Spotify API"}
+    );
 });
 
 // Get artist ID
@@ -197,5 +191,18 @@ router.get('/playPreviews', (req,res,next) => {
         });
 });
 
+/**
+ * Instead of assuming everyone just wants all the 'yung' artists, we'll
+ * let them search for yung on their own.
+ */
+router.get('/artistsLike', (req,res,next) => {
+    const stem = req.query.artistLikeString;
+    spotifyApi.searchArtists(stem)
+        .then((data) => {
+            res.send(data.body.artists.items);
+        }, (err) => {
+            return next(err);
+    });
+});
 
 module.exports = router;

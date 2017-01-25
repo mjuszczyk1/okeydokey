@@ -48,8 +48,14 @@ block content
             div.well
                 p I want to return every artist with "Yung" in their name.
                 p And actually, since we don't need any user input, we'll just supply the template with that info.
-            h1 Yung artists
-            each yungin in yungArtists
+            form#artistsLike
+                div.form-group
+                    label(for='artistLikeString') Artist:
+                    input#artistLikeString.form-control(type='text' placeholder='yung' name='artistLikeString')
+                button.btn.btn-primary(type='submit') Submit
+            div#artistsLikeContainer
+
+            //- each yungin in yungArtists
                 if yungin.images.length
                     div.row.yungin-row
                         div.col-md-6.img-col
@@ -133,6 +139,24 @@ block scripts
                     $.get('/spotify/out/playPreviews', searchParams, (data) => {
                         $('#songPreviewsAlbumTitle').text(data.albumTitle);
                         buildSongPreview(data);
+                        
+                    });
+                });
+                $('#artistsLike').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {artistLikeString: $('#artistLikeString').val()}
+                    $.get('/spotify/out/artistsLike', searchParams, (data) => {
+                        $('#artistsLikeContainer').empty();
+                        data.filter((artist) => {
+                            let cont = $("<div class='yungin-row row'></div>");
+                            if (artist.images.length) {
+                                let img = $("<div class='col-md-6 img-col'><img src='"+artist.images[0].url+"'></div>");
+                                cont.append(img);
+                            }
+                            //- console.log(artist);
+                            cont.append("<div class='col-md-6'><p>" + artist.name + "</p></div>");
+                            $('#artistsLikeContainer').append(cont);
+                        });
                         
                     });
                 });

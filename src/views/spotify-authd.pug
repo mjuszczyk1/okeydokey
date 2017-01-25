@@ -1,0 +1,36 @@
+extends layout
+
+block content
+    .row
+        .col-md-6.col-md-offset-3
+            h1 Email is: #{user.emails[0].value}
+            hr
+    .row
+        .col-md-6.col-md-offset-3
+            div.well
+                p Now that we're authenticated.....
+                p Let's find that BPM and time signature..
+                p Make it easy for first path, where user uses the actual ID of the song.
+                p Here's the ID for a Claude song, so BPM should be relatively accurate.
+                p 7bFOkwjxOcGaw6ZULE58Mh
+            form#audioAnalysis
+                div.form-group
+                    label(for='trackID') Track ID:
+                    input#trackID.form-control(type='text', placeholder='Danny Brown' name='trackID')
+                button.btn.btn-primary(type='submit') Submit
+            h1#artistId
+            hr/
+
+block scripts
+    script.
+        (($) => {
+            $(document).ready((e) => {
+                $('#audioAnalysis').submit((e) => {
+                    e.preventDefault();
+                    const searchParams = {id: $('#trackID').val()};
+                    $.get('/spotify/in/authenticated/audioAnalysis', searchParams, (data) => {
+                        $('#artistId').text(data)
+                    });
+                });
+            });
+        })(jQuery);

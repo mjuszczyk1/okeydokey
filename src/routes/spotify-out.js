@@ -28,7 +28,10 @@ router.get('/', (req,res,next) => {
     spotifyApi.searchArtists('Yung')
         .then((data) => {
             console.log(data.body.artists.items);
-            return res.render('spotify-out', {title: "Spotify API", yungArtists: data.body.artists.items});
+            return res.render(
+                'spotify-out', 
+                {title: "Spotify API", yungArtists: data.body.artists.items}
+            );
         }, (err) => {
             return next(err);
     });
